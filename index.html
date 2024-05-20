@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      height: 100vh;
+      font-family: sans-serif;
+    }
+
+    input {
+      padding: 10px;
+      margin: 24px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+
+    button {
+      padding: 10px;
+      margin: 2px 0 0 0;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #output {
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      row-gap: 8px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <script>
+    (function () {
+      window._confirmationBoosterSettings = {
+        email_query: ".formkit-input[name='email_address']"
+      }
+
+      const script = document.createElement('script');
+      script.src = './script.js';
+      script.async = true;
+      const head = document.getElementsByTagName('head')[0];
+      head.appendChild(script);
+    })();
+
+  </script>
+
+  <!-- <script async data-uid="7490f03af6" src="https://jakubzelazny.ck.page/7490f03af6/index.js"></script> -->
+  <!-- <input type="email" id="email">
+  <button id="button">Check Email</button> -->
+
+  <div id="form" data-element="fields" data-stacked="false" class="seva-fields formkit-fields">
+    <div class="formkit-field"><input type="text" class="formkit-input" name="email_address"
+        style="color:#000;border-color:#e3e3e3;border-radius:4px;font-weight:400" aria-label="Email Address"
+        placeholder="Email Address" required=""></div><button data-element="submit"
+      class="formkit-submit formkit-submit" type="button"
+      style="color:#fff;background-color:#560aed;border-radius:4px;font-weight:700">
+      <div class="formkit-spinner">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div><span class="">Subscribe</span>
+    </button>
+  </div>
+
+  <!--
+    <pre id="jsonResult">
+
+  </pre> -->
+  <div id="output" style="display: flex; flex-direction: column; row-gap: 8px;"></div>
+  <!-- <a href="https://example.com" target="_blank"
+    style="display: flex; align-items: center; border-radius: 8px; border: #6b7280 1px solid; padding: 8px 32px; font-size: 16px; font-weight: 600; text-decoration: none; color: #111827;">
+    <img src="./icons/apple.png" height="20" style="height: 20px;" />
+    <div style="margin: 0 0 0 8px; ">Open Mail</div>
+  </a> -->
+  <!-- <script src="./script.js" defer> -->
+
+  </script>
+
+</body>
+
+</html>
