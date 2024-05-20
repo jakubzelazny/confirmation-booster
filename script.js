@@ -114,6 +114,7 @@ function getPlatform() {
 
 async function testScript(data) {
   testDeleteForm()
+  testAddSuccessElement()
   console.log("test")
   console.log(data)
 
@@ -135,6 +136,37 @@ window.configureSetup = configureSetup
 
 // Select the target element with a specific query
 
+function watchForDisappear() {
+  const targetElement = document.querySelector(
+    ".formkit-input[name='email_address']"
+  )
+
+  const observer = new MutationObserver((records, observer) => {
+    console.log("INSIDE NEW observe")
+    console.log(records)
+    if (
+      window._confirmationBoosterData.emailSubmitted &&
+      document.querySelector(".formkit-alert.formkit-alert-success")
+    ) {
+      console.log(records)
+      console.log("----")
+      console.log("NOT FOUND and submitted")
+
+      mainSomething()
+      observer.disconnect()
+    }
+  })
+
+  console.log(observer)
+  // Start observing mutations on the document
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  })
+
+  return null
+}
+
 function watchEmailInput() {
   const emailInput = document.querySelector(
     ".formkit-input[name='email_address']"
@@ -144,7 +176,7 @@ function watchEmailInput() {
     window._confirmationBoosterData.emailInput = emailInput
   }
 
-  const observer = new MutationObserver(async (records, observer) => {
+  const observer = new MutationObserver((records, observer) => {
     // console.log(observer)
 
     if (
@@ -158,17 +190,6 @@ function watchEmailInput() {
         ".formkit-input[name='email_address']"
       )
 
-      // observer.disconnect()
-    }
-
-    if (
-      window._confirmationBoosterData.emailSubmitted &&
-      !document.querySelector(".formkit-input[name='email_address']")
-    ) {
-      console.log(records)
-      console.log("NOT FOUND and submitted")
-
-      mainSomething()
       observer.disconnect()
     }
   })
@@ -229,6 +250,7 @@ function watchNewsletterSubmitButton() {
 
 watchEmailInput()
 watchNewsletterSubmitButton()
+watchForDisappear()
 
 // document.addEventListener("DOMContentLoaded", () => {
 //   console.log(document.querySelector(".formkit-input"))
@@ -241,31 +263,39 @@ watchNewsletterSubmitButton()
 //   })
 // })
 
-document.getElementById("output").innerHTML = generateButton({
-  url: "https://mail.google.com",
-  name: "Mail",
-  iconPath: "./icons/apple.png",
-})
+// document.getElementById("output").innerHTML = generateButton({
+//   url: "https://mail.google.com",
+//   name: "Mail",
+//   iconPath: "./icons/apple.png",
+// })
 
 function testDeleteForm() {
   console.log(document.querySelector("#form"))
   document.querySelector("#form").remove()
 }
 
-async function mainSomething() {
+function testAddSuccessElement() {
+  const successElement = document.createElement("div")
+  successElement.classList.add("formkit-alert")
+  successElement.classList.add("formkit-alert-success")
+  successElement.innerHTML = "Success"
+  document.body.appendChild(successElement)
+}
+
+function mainSomething() {
   console.log("Starting")
   const start = Date.now()
   console.log(start)
-  const provider = await checkEmailProvider(
-    window._confirmationBoosterData.emailAddress
+  checkEmailProvider(window._confirmationBoosterData.emailAddress).then(
+    (provider) => {
+      console.log(window._confirmationBoosterData.emailAddress)
+      console.log("HERE")
+      console.log(provider)
+      document.getElementById("output").innerHTML = buttonsHTML({
+        provider: provider,
+        platform: getPlatform(),
+      })
+      console.log(start - Date.now())
+    }
   )
-
-  console.log(start - Date.now())
-  console.log(window._confirmationBoosterData.emailAddress)
-  console.log("HERE")
-  console.log(provider)
-  document.getElementById("output").innerHTML = buttonsHTML({
-    provider: provider,
-    platform: getPlatform(),
-  })
 }
