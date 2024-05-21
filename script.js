@@ -136,7 +136,7 @@ window.configureSetup = configureSetup
 
 // Select the target element with a specific query
 
-function watchForDisappear() {
+function watchForSuccess() {
   const targetElement = document.querySelector(
     ".formkit-input[name='email_address']"
   )
@@ -144,6 +144,7 @@ function watchForDisappear() {
   const observer = new MutationObserver((records, observer) => {
     console.log("INSIDE NEW observe")
     console.log(records)
+
     if (
       window._confirmationBoosterData.emailSubmitted &&
       document.querySelector(".formkit-alert.formkit-alert-success")
@@ -215,6 +216,7 @@ function watchNewsletterSubmitButton() {
       "click",
       () => {
         const email = window._confirmationBoosterData.emailInput.value
+        window._confirmationBoosterData.emailSubmitted = true
         testScript({ email })
       }
     )
@@ -234,7 +236,7 @@ function watchNewsletterSubmitButton() {
         .addEventListener("click", () => {
           const email = window._confirmationBoosterData.emailInput.value
           window._confirmationBoosterData.emailSubmitted = true
-          // testScript({ email })
+          testScript({ email })
         })
 
       observer.disconnect()
@@ -250,7 +252,7 @@ function watchNewsletterSubmitButton() {
 
 watchEmailInput()
 watchNewsletterSubmitButton()
-watchForDisappear()
+watchForSuccess()
 
 // document.addEventListener("DOMContentLoaded", () => {
 //   console.log(document.querySelector(".formkit-input"))
