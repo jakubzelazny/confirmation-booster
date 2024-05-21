@@ -48,11 +48,14 @@
   <script>
     (function () {
       window._confirmationBoosterSettings = {
-        email_query: ".formkit-input[name='email_address']"
+        emailInputSelector: ".formkit-input[name='email_address']",
+        submitButtonSelector: ".formkit-submit",
+        successElementSelector: ".formkit-alert.formkit-alert-success"
       }
 
       const script = document.createElement('script');
       script.src = './script.js';
+      script.type = "module"
       script.async = true;
       const head = document.getElementsByTagName('head')[0];
       head.appendChild(script);

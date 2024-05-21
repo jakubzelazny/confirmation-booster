@@ -1,3 +1,17 @@
+import { testAddSuccessElement, testDeleteForm } from "./testScripts.js"
+
+window._confirmationBoosterData = {}
+
+window._confirmationBoosterData.emailSubmitted = false
+window._confirmationBoosterData.subscriberEmailAddress = null
+window._confirmationBoosterData.emailInputSelector =
+  window._confirmationBoosterSettings.emailInputSelector
+window._confirmationBoosterData.submitButtonSelector =
+  window._confirmationBoosterSettings.submitButtonSelector
+window._confirmationBoosterData.successElementSelector =
+  window._confirmationBoosterSettings.successElementSelector
+window._confirmationBoosterData.senderEmailAddress = "jonathanstark.com"
+
 const emailProviders = [
   {
     name: "Gmail",
@@ -5,7 +19,7 @@ const emailProviders = [
     mxRecordsSubstrings: ["google.com"],
     iconPath: "./icons/gmail.png",
     url: () => {
-      return "https://mail.google.com"
+      return `https://mail.google.com/mail/u/${window._confirmationBoosterData.subscriberEmailAddress}/#search/from:${window._confirmationBoosterData.senderEmailAddress}+in:anywhere+newer_than:1d`
     },
   },
   {
@@ -17,11 +31,6 @@ const emailProviders = [
     },
   },
 ]
-
-window._confirmationBoosterData = {}
-
-window._confirmationBoosterData.emailSubmitted = false
-window._confirmationBoosterData.emailAddress = null
 
 function generateButton(options) {
   return `
@@ -55,7 +64,6 @@ const buttonsHTML = (options) => {
 }
 
 async function checkEmailProvider(email) {
-  console.log(email)
   const domain = email.split("@")[1]
   let provider = emailProviders.find((provider) => {
     return provider.domains.includes(domain)
@@ -85,7 +93,6 @@ async function fetchMXRecords(domain) {
   )
 
   const data = await response.json()
-  console.log(data.Answer)
 
   return data.Answer
 }
@@ -112,54 +119,21 @@ function getPlatform() {
   }
 }
 
-async function testScript(data) {
-  testDeleteForm()
-  testAddSuccessElement()
-  console.log("test")
-  console.log(data)
-
-  window._confirmationBoosterData.emailAddress = data.email
-}
-
-function configureSetup(options) {
-  console.log(options)
-  window.confirmationSetup = options
-}
-
-window.checkEmailProvider = checkEmailProvider
-window.fetchMXRecords = fetchMXRecords
-window.getPlatform = getPlatform
-window.testScript = testScript
-
-window.confirmationSetup = null
-window.configureSetup = configureSetup
-
-// Select the target element with a specific query
-
 function watchForSuccess() {
-  const targetElement = document.querySelector(
-    ".formkit-input[name='email_address']"
-  )
-
   const observer = new MutationObserver((records, observer) => {
-    console.log("INSIDE NEW observe")
-    console.log(records)
-
     if (
       window._confirmationBoosterData.emailSubmitted &&
-      document.querySelector(".formkit-alert.formkit-alert-success")
+      document.querySelector(
+        window._confirmationBoosterData.successElementSelector
+      )
     ) {
-      console.log(records)
-      console.log("----")
-      console.log("NOT FOUND and submitted")
+      console.log("FOUND Success element in observer")
 
       mainSomething()
       observer.disconnect()
     }
   })
 
-  console.log(observer)
-  // Start observing mutations on the document
   observer.observe(document.body, {
     childList: true,
     subtree: true,
@@ -170,134 +144,97 @@ function watchForSuccess() {
 
 function watchEmailInput() {
   const emailInput = document.querySelector(
-    ".formkit-input[name='email_address']"
+    window._confirmationBoosterData.emailInputSelector
   )
 
   if (emailInput) {
     window._confirmationBoosterData.emailInput = emailInput
+    console.log("FOUND email input OUTSIDE observer")
+  } else {
+    const observer = new MutationObserver((records, observer) => {
+      if (
+        !window._confirmationBoosterData.emailSubmitted &&
+        document.querySelector(
+          window._confirmationBoosterData.emailInputSelector
+        )
+      ) {
+        console.log("FOUND email input in observer")
+
+        window._confirmationBoosterData.emailInput = document.querySelector(
+          window._confirmationBoosterData.emailInputSelector
+        )
+
+        observer.disconnect()
+      }
+    })
+
+    observer.observe(document.body, { childList: true, subtree: true })
   }
-
-  const observer = new MutationObserver((records, observer) => {
-    // console.log(observer)
-
-    if (
-      !window._confirmationBoosterData.emailSubmitted &&
-      document.querySelector(".formkit-input[name='email_address']")
-    ) {
-      console.log(records)
-      console.log("FOUND and not submitted")
-
-      window._confirmationBoosterData.emailInput = document.querySelector(
-        ".formkit-input[name='email_address']"
-      )
-
-      observer.disconnect()
-    }
-  })
-
-  console.log(observer)
-  // Start observing mutations on the document
-  observer.observe(document.body, { childList: true, subtree: true })
 
   return null
 }
-const targetElement = document.querySelector(
-  ".formkit-input[name='email_address']"
-)
 
 function watchNewsletterSubmitButton() {
   const submitButton = document.querySelector(
-    "button[data-element='submit'].formkit-submit"
+    window._confirmationBoosterData.submitButtonSelector
   )
 
   if (submitButton) {
+    console.log("FOUND submit button OUTSIDE observer")
     window._confirmationBoosterData.submitButton = submitButton
     window._confirmationBoosterData.submitButton.addEventListener(
       "click",
-      () => {
-        const email = window._confirmationBoosterData.emailInput.value
-        window._confirmationBoosterData.emailSubmitted = true
-        testScript({ email })
-      }
+      submitButtonCallback
     )
+  } else {
+    const observer = new MutationObserver((records, observer) => {
+      if (
+        document.querySelector(
+          window._confirmationBoosterData.submitButtonSelector
+        )
+      ) {
+        console.log("FOUND submit button INSIDE observer")
+
+        window._confirmationBoosterData.submitButton = document.querySelector(
+          window._confirmationBoosterData.submitButtonSelector
+        )
+        window._confirmationBoosterData.submitButton.addEventListener(
+          "click",
+          submitButtonCallback
+        )
+
+        observer.disconnect()
+      }
+    })
+
+    observer.observe(document.body, { childList: true, subtree: true })
   }
-
-  const observer = new MutationObserver((records, observer) => {
-    console.log(records)
-    console.log(observer)
-
-    if (
-      document.querySelector("button[data-element='submit'].formkit-submit")
-    ) {
-      console.log("FOUND")
-
-      window._confirmationBoosterData.submitButton = document
-        .querySelector("button[data-element='submit'].formkit-submit")
-        .addEventListener("click", () => {
-          const email = window._confirmationBoosterData.emailInput.value
-          window._confirmationBoosterData.emailSubmitted = true
-          testScript({ email })
-        })
-
-      observer.disconnect()
-    }
-  })
-
-  console.log(observer)
-  // Start observing mutations on the document
-  observer.observe(document.body, { childList: true, subtree: true })
-
   return null
+}
+
+function mainSomething() {
+  checkEmailProvider(
+    window._confirmationBoosterData.subscriberEmailAddress
+  ).then((provider) => {
+    document.getElementById("output").innerHTML = buttonsHTML({
+      provider: provider,
+      platform: getPlatform(),
+    })
+  })
+}
+
+function submitButtonCallback() {
+  const email = window._confirmationBoosterData.emailInput.value
+  window._confirmationBoosterData.emailSubmitted = true
+  window._confirmationBoosterData.subscriberEmailAddress = email
+  testDeleteForm()
+  testAddSuccessElement()
 }
 
 watchEmailInput()
 watchNewsletterSubmitButton()
 watchForSuccess()
 
-// document.addEventListener("DOMContentLoaded", () => {
-//   console.log(document.querySelector(".formkit-input"))
-//   console.log(document.querySelector(".formkit-input[name='email_address']"))
-//   // document.querySelector(window.confirmationSetup.email_query)
-
-//   document.querySelector("button").addEventListener("click", () => {
-//     const email = document.getElementById("email").value
-//     testScript({ email })
-//   })
-// })
-
-// document.getElementById("output").innerHTML = generateButton({
-//   url: "https://mail.google.com",
-//   name: "Mail",
-//   iconPath: "./icons/apple.png",
-// })
-
-function testDeleteForm() {
-  console.log(document.querySelector("#form"))
-  document.querySelector("#form").remove()
-}
-
-function testAddSuccessElement() {
-  const successElement = document.createElement("div")
-  successElement.classList.add("formkit-alert")
-  successElement.classList.add("formkit-alert-success")
-  successElement.innerHTML = "Success"
-  document.body.appendChild(successElement)
-}
-
-function mainSomething() {
-  console.log("Starting")
-  const start = Date.now()
-  console.log(start)
-  checkEmailProvider(window._confirmationBoosterData.emailAddress).then(
-    (provider) => {
-      console.log(window._confirmationBoosterData.emailAddress)
-      console.log("HERE")
-      console.log(provider)
-      document.getElementById("output").innerHTML = buttonsHTML({
-        provider: provider,
-        platform: getPlatform(),
-      })
-      console.log(start - Date.now())
-    }
-  )
-}
+window.checkEmailProvider = checkEmailProvider
+window.fetchMXRecords = fetchMXRecords
+window.getPlatform = getPlatform
