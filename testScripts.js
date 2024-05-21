@@ -7,7 +7,21 @@ function testAddSuccessElement() {
 }
 
 function testDeleteForm() {
-  document.querySelector("#form").remove()
+  if (document.querySelector("#form")) {
+    document.querySelector("#form").remove()
+    testAddSuccessElement()
+  }
 }
 
-export { testAddSuccessElement, testDeleteForm }
+function testAddSuccessListener() {
+  const button = document.querySelector(
+    window._confirmationBoosterData.submitButtonSelector
+  )
+  if (button) {
+    button.addEventListener("click", () => {
+      testDeleteForm()
+    })
+  }
+}
+
+export { testAddSuccessElement, testDeleteForm, testAddSuccessListener }

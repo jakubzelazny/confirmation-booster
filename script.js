@@ -1,4 +1,4 @@
-import { testAddSuccessElement, testDeleteForm } from "./testScripts.js"
+import { testAddSuccessListener } from "./testScripts.js"
 
 window._confirmationBoosterData = {}
 
@@ -227,13 +227,12 @@ function submitButtonCallback() {
   const email = window._confirmationBoosterData.emailInput.value
   window._confirmationBoosterData.emailSubmitted = true
   window._confirmationBoosterData.subscriberEmailAddress = email
-  testDeleteForm()
-  testAddSuccessElement()
 }
 
 watchEmailInput()
 watchNewsletterSubmitButton()
 watchForSuccess()
+testAddSuccessListener()
 
 window.checkEmailProvider = checkEmailProvider
 window.fetchMXRecords = fetchMXRecords
