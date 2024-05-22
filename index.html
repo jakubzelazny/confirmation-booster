@@ -48,14 +48,16 @@
   <script>
     (function () {
       window._confirmationBoosterSettings = {
+        senderEmailAddress: "jonathanstark.com",
         emailInputSelector: ".formkit-input[name='email_address']",
         submitButtonSelector: ".formkit-submit",
-        successElementSelector: ".formkit-alert.formkit-alert-success"
+        successElementSelector: ".formkit-alert.formkit-alert-success",
+        imagesPath: "./",
       }
 
       const script = document.createElement('script');
-      script.src = './script.js';
-      script.type = "module"
+      script.src = './dist/bundle.js';
+      // script.type = "module"
       script.async = true;
       const head = document.getElementsByTagName('head')[0];
       head.appendChild(script);
@@ -63,10 +65,10 @@
 
   </script>
 
-  <script async data-uid="7490f03af6" src="https://jakubzelazny.ck.page/7490f03af6/index.js"></script>
+  <!-- <script async data-uid="7490f03af6" src="https://jakubzelazny.ck.page/7490f03af6/index.js"></script> -->
 
 
-  <!-- <div id="form" data-element="fields" data-stacked="false" class="seva-fields formkit-fields">
+  <div id="form" data-element="fields" data-stacked="false" class="seva-fields formkit-fields">
     <div class="formkit-field"><input type="text" class="formkit-input" name="email_address"
         style="color:#000;border-color:#e3e3e3;border-radius:4px;font-weight:400" aria-label="Email Address"
         placeholder="Email Address" required=""></div><button data-element="submit"
@@ -78,7 +80,7 @@
         <div></div>
       </div><span class="">Subscribe</span>
     </button>
-  </div> -->
+  </div>
 
   <!--
     <pre id="jsonResult">
